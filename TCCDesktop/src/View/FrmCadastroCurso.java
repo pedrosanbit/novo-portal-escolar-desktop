@@ -5,7 +5,12 @@
  */
 package View;
 
+import Model.CodInvalidoException;
+import Model.NomeInvalidoException;
+import java.awt.Color;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -48,6 +53,11 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
         lblNome.setText("Nome do Curso:");
 
         btnCadastrar.setText("Cadastrar");
+        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastrarActionPerformed(evt);
+            }
+        });
 
         btnFechar.setText("Fechar");
         btnFechar.addActionListener(new java.awt.event.ActionListener() {
@@ -115,6 +125,36 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharActionPerformed
         this.setVisible(false);        
     }//GEN-LAST:event_btnFecharActionPerformed
+
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        txtNome.setBorder(null);
+        txtCod.setBorder(null);
+        try{
+            if(txtCod.getText().trim().equals("")||txtCod.getText().length()<3){
+                throw new CodInvalidoException();
+            }
+            else{
+                if(txtNome.getText().trim().equals("")||txtNome.getText().trim().length()<4){
+                    throw new NomeInvalidoException();
+                }else{
+                    String nome=txtNome.getText();
+                    nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
+                    String cod=txtCod.getText();
+                    JOptionPane.showMessageDialog(null,""+cod+"\n"+nome);
+                }
+            }
+        }
+        catch(CodInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtCod.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtCod.requestFocus();
+        }
+        catch(NomeInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtNome.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtNome.requestFocus();
+        }
+    }//GEN-LAST:event_btnCadastrarActionPerformed
 
     /**
      * @param args the command line arguments

@@ -5,6 +5,15 @@
  */
 package View;
 
+import Model.CargaHInvalidaException;
+import Model.CodInvalidoException;
+import Model.NomeInvalidoException;
+import java.awt.Color;
+import java.text.ParseException;
+import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
+import javax.swing.text.MaskFormatter;
+
 /**
  *
  * @author ottoj
@@ -16,6 +25,7 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
      */
     public FrmCadastroDisciplina() {
         initComponents();
+        formatarCampo();
     }
 
     /**
@@ -35,8 +45,8 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
         txtCod = new javax.swing.JTextField();
         txtNome = new javax.swing.JTextField();
         lblCarga = new javax.swing.JLabel();
-        txtCargaH = new javax.swing.JTextField();
         btnCadastrar = new javax.swing.JButton();
+        txtCargaH = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,6 +67,13 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
         lblCarga.setText("Carga Horária:");
 
         btnCadastrar.setText("Cadastrar");
+        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastrarActionPerformed(evt);
+            }
+        });
+
+        txtCargaH.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("##"))));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -66,21 +83,23 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblTitulo)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(lblCod)
-                                .addComponent(lblCarga)
-                                .addComponent(lblNome))
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtCod)
-                                    .addComponent(txtCargaH, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
-                                .addComponent(txtNome, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addComponent(btnCadastrar))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblCod)
+                            .addComponent(lblCarga)
+                            .addComponent(lblNome))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtCargaH)))
+                    .addComponent(btnCadastrar, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnFechar))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -124,9 +143,59 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
        this.setVisible(false);
     }//GEN-LAST:event_btnFecharActionPerformed
 
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        txtNome.setBorder(null);
+        txtCod.setBorder(null);
+        txtCargaH.setBorder(null);
+        try{
+            if(txtCod.getText().trim().equals("")||txtCod.getText().length()<3){
+                throw new CodInvalidoException();
+            }
+            else{
+                if(txtNome.getText().trim().equals("")||txtNome.getText().trim().length()<4){
+                    throw new NomeInvalidoException();
+                }else{
+                    if(txtCargaH.getText().trim().equals("")||Integer.parseInt(txtCargaH.getText())<=0){
+                        throw new CargaHInvalidaException();
+                    }else{                            
+                        //if's para verificar se já nao existe rf/rg no bd
+                        String nome=txtNome.getText();
+                        nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
+                        String cod=txtCod.getText();
+                        int carga=Integer.parseInt(txtCargaH.getText());
+                        JOptionPane.showMessageDialog(null,""+cod+"\n"+nome+"\n"+carga);
+                    }
+                }
+             }
+        }
+        catch(CodInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtCod.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtCod.requestFocus();
+        }
+        catch(NomeInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtNome.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtNome.requestFocus();
+        }
+        catch(CargaHInvalidaException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtCargaH.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtCargaH.requestFocus();
+        }
+    }//GEN-LAST:event_btnCadastrarActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    private void formatarCampo(){
+        try {
+            MaskFormatter mask= new MaskFormatter("##");
+            mask.install(txtCargaH);
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
+        }
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -167,7 +236,7 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
     private javax.swing.JLabel lblCod;
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblTitulo;
-    private javax.swing.JTextField txtCargaH;
+    private javax.swing.JFormattedTextField txtCargaH;
     private javax.swing.JTextField txtCod;
     private javax.swing.JTextField txtNome;
     // End of variables declaration//GEN-END:variables

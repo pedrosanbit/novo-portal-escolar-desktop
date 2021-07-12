@@ -5,6 +5,16 @@
  */
 package View;
 
+import Model.CodInvalidoException;
+import Model.CursoInvalidoException;
+import Model.NomeInvalidoException;
+import Model.PeriodoInvalidoException;
+import java.awt.Color;
+import java.text.ParseException;
+import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
+import javax.swing.text.MaskFormatter;
+
 /**
  *
  * @author ottoj
@@ -16,6 +26,7 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
      */
     public FrmCadastroTurma() {
         initComponents();
+        formatarCampo();
     }
 
     /**
@@ -37,8 +48,8 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
         txtNome = new javax.swing.JTextField();
         txtCod = new javax.swing.JTextField();
         cmbCurso = new javax.swing.JComboBox<>();
-        txtPeriodo = new javax.swing.JTextField();
         btnCadastrar = new javax.swing.JButton();
+        txtPeriodo = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,6 +74,13 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
         cmbCurso.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Teste1", "Teste2" }));
 
         btnCadastrar.setText("Cadastrar");
+        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastrarActionPerformed(evt);
+            }
+        });
+
+        txtPeriodo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -85,13 +103,13 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
                                         .addComponent(lblPeriodo)
                                         .addComponent(lblNome))
                                     .addGap(18, 18, 18)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(txtCod)
                                         .addComponent(cmbCurso, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txtPeriodo, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(txtNome, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                                        .addComponent(txtPeriodo))))
                             .addComponent(btnFechar))
-                        .addGap(0, 21, Short.MAX_VALUE))))
+                        .addGap(21, 21, 21))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,9 +157,70 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_btnFecharActionPerformed
 
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        txtNome.setBorder(null);
+        txtCod.setBorder(null);
+        cmbCurso.setBorder(null);
+        txtPeriodo.setBorder(null);
+        try{
+            if(txtCod.getText().trim().equals("")||txtCod.getText().length()<3){
+                throw new CodInvalidoException();
+            }
+            else{
+                if(txtNome.getText().trim().equals("")||txtNome.getText().trim().length()<4){
+                    throw new NomeInvalidoException();
+                }else{
+                    if(cmbCurso.getSelectedItem().equals("")){
+                        throw new CursoInvalidoException();
+                    }else{
+                        if(txtPeriodo.getText().trim().equals("")||txtPeriodo.getText().trim().length()<4){
+                            throw new PeriodoInvalidoException();
+                        }else{
+                            String nome=txtNome.getText();
+                            nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
+                            String cod=txtCod.getText();
+                            String curso= cmbCurso.getSelectedItem().toString();
+                            int periodo= Integer.parseInt(txtPeriodo.getText());
+                            JOptionPane.showMessageDialog(null,""+cod+"\n"+nome+"\n"+curso+"\n"+periodo);
+                        }
+                    }
+                    
+                }
+            }
+        }
+        catch(CodInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtCod.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtCod.requestFocus();
+        }
+        catch(NomeInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtNome.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtNome.requestFocus();
+        }
+        catch(CursoInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            cmbCurso.setBorder(BorderFactory.createLineBorder(Color.red));
+            cmbCurso.requestFocus();
+        }
+        catch(PeriodoInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtPeriodo.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtPeriodo.requestFocus();
+        }
+    }//GEN-LAST:event_btnCadastrarActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    private void formatarCampo(){
+        try {
+            MaskFormatter mask= new MaskFormatter("####");
+            mask.install(txtPeriodo);
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
+        }
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -186,6 +265,6 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
     private javax.swing.JLabel lblTit;
     private javax.swing.JTextField txtCod;
     private javax.swing.JTextField txtNome;
-    private javax.swing.JTextField txtPeriodo;
+    private javax.swing.JFormattedTextField txtPeriodo;
     // End of variables declaration//GEN-END:variables
 }

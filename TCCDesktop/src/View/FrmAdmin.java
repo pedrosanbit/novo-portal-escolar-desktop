@@ -7,7 +7,9 @@ package View;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -128,7 +130,7 @@ public class FrmAdmin extends javax.swing.JFrame {
 
         tabInicio.addTab("Inicio", jPanel2);
 
-        lblCodC.setText("Código do Cruso:");
+        lblCodC.setText("Código do Curso:");
 
         lblNomeC.setText("Nome do Curso:");
 
@@ -137,6 +139,11 @@ public class FrmAdmin extends javax.swing.JFrame {
         cmbProfCurso.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Teste", "Teste2", "Teste3" }));
 
         btnConsultaCurso.setText("Consultar");
+        btnConsultaCurso.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultaCursoActionPerformed(evt);
+            }
+        });
 
         btnCadastrarCurso.setText("Cadastrar");
         btnCadastrarCurso.addActionListener(new java.awt.event.ActionListener() {
@@ -146,6 +153,14 @@ public class FrmAdmin extends javax.swing.JFrame {
         });
 
         tblCurso.setAutoCreateColumnsFromModel(false);
+        tblCurso.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3"
+            }
+        ));
         jScrollPane1.setViewportView(tblCurso);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -205,7 +220,7 @@ public class FrmAdmin extends javax.swing.JFrame {
 
         tabInicio.addTab("Cursos", jPanel3);
 
-        lblCodD.setText("Códgo da Disciplina:");
+        lblCodD.setText("Código da Disciplina:");
 
         lblNomeD.setText("Nome da Disciplina:");
 
@@ -300,7 +315,7 @@ public class FrmAdmin extends javax.swing.JFrame {
 
         tabInicio.addTab("Disciplinas", jPanel4);
 
-        lblCodT.setText("Códgo da Turma:");
+        lblCodT.setText("Código da Turma:");
 
         lblNomeT.setText("Nome da Turma:");
 
@@ -362,7 +377,7 @@ public class FrmAdmin extends javax.swing.JFrame {
                         .addComponent(btnCadastroTurma)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -678,6 +693,36 @@ public class FrmAdmin extends javax.swing.JFrame {
         }
         j=null;
     }//GEN-LAST:event_btnCadastroAlunoActionPerformed
+
+    private void btnConsultaCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaCursoActionPerformed
+        String cod=null;
+        String nome=null;
+        String prof=null;
+        try{
+            if(!cmbProfCurso.getItemAt(cmbProfCurso.getSelectedIndex()).trim().equals("")){
+                prof=cmbProfCurso.getItemAt(cmbProfCurso.getSelectedIndex());
+            }
+            if(!txtCodCurso.getText().trim().equals("")){
+                cod=txtCodCurso.getText().trim();
+            }
+            if(!txtNomeCurso.getText().trim().equals("")){
+                nome=txtNomeCurso.getText();
+            }
+        }
+        catch(RuntimeException e){
+            
+        }
+        /*txtNomeCurso.setText("");
+        txtCodCurso.setText("");
+        cmbProfCurso.setSelectedIndex(0);
+        //pesquisa + passar pra tabela
+        DefaultTableModel dados= new DefaultTableModel();
+        dados.setNumRows(0);
+        dados.addColumn("Nome");
+        dados.addColumn("Idade");
+        dados.addRow(new Object[]{"2", "1"});
+        this.tblCurso.setModel(dados);*/
+    }//GEN-LAST:event_btnConsultaCursoActionPerformed
 
     /**
      * @param args the command line arguments

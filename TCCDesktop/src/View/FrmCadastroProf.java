@@ -5,17 +5,27 @@
  */
 package View;
 
+import Model.NomeInvalidoException;
+import Model.RfInvalidoException;
+import Model.RgInvalidoException;
+import java.awt.Color;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
+import javax.swing.text.MaskFormatter;
+
 /**
  *
  * @author ottoj
  */
 public class FrmCadastroProf extends javax.swing.JFrame {
 
-    /**
-     * Creates new form FrmCadastroProf
-     */
+    
     public FrmCadastroProf() {
         initComponents();
+        formatarCampo();
     }
 
     /**
@@ -35,8 +45,8 @@ public class FrmCadastroProf extends javax.swing.JFrame {
         lblRg = new javax.swing.JLabel();
         txtNome = new javax.swing.JTextField();
         txtRf = new javax.swing.JTextField();
-        txtRg = new javax.swing.JTextField();
         btnCadastrar = new javax.swing.JButton();
+        txtRg = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,6 +67,11 @@ public class FrmCadastroProf extends javax.swing.JFrame {
         lblRg.setText("RG:");
 
         btnCadastrar.setText("Cadastrar");
+        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastrarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -118,7 +133,9 @@ public class FrmCadastroProf extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -128,9 +145,60 @@ public class FrmCadastroProf extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_btnFecharActionPerformed
 
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        txtNome.setBorder(null);
+        txtRf.setBorder(null);
+        txtRg.setBorder(null);
+        try{
+            if(txtNome.getText().trim().equals("")||txtNome.getText().trim().length()<4){
+                throw new NomeInvalidoException();
+            }
+            else{
+                if(txtRf.getText().trim().equals("")){
+                    throw new RfInvalidoException();
+                }else{
+                    if(txtRg.getText().trim().equals("")||txtRg.getText().trim().length()!=9){
+                        throw new RgInvalidoException();
+                    }else{
+                        //if's para verificar se já nao existe rf/rg no bd
+                        String nome=txtNome.getText();
+                        nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
+                        String rg=txtRg.getText();
+                        String rf=txtRf.getText();
+                        //JOptionPane.showMessageDialog(null,""+nome+"\n"+rf+"\n"+rg);
+                    }
+                }
+            }
+        }
+        catch(NomeInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtNome.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtNome.requestFocus();
+        }
+        catch(RfInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtRf.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtRf.requestFocus();
+        }
+        catch(RgInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtRg.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtRg.requestFocus();
+        }
+    }//GEN-LAST:event_btnCadastrarActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    
+    private void formatarCampo(){
+        try {
+            MaskFormatter mask= new MaskFormatter("#########");
+            mask.install(txtRg);
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
+        }
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -173,6 +241,6 @@ public class FrmCadastroProf extends javax.swing.JFrame {
     private javax.swing.JLabel lblTit;
     private javax.swing.JTextField txtNome;
     private javax.swing.JTextField txtRf;
-    private javax.swing.JTextField txtRg;
+    private javax.swing.JFormattedTextField txtRg;
     // End of variables declaration//GEN-END:variables
 }
