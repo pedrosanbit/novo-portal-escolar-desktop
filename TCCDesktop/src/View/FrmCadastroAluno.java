@@ -5,6 +5,16 @@
  */
 package View;
 
+import Model.EmailInvalidoException;
+import Model.NomeInvalidoException;
+import Model.RaInvalidoException;
+import Model.RgInvalidoException;
+import java.awt.Color;
+import java.text.ParseException;
+import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
+import javax.swing.text.MaskFormatter;
+
 /**
  *
  * @author ottoj
@@ -16,6 +26,7 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
      */
     public FrmCadastroAluno() {
         initComponents();
+        formatarCampo();
     }
 
     /**
@@ -36,9 +47,9 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         txtNome = new javax.swing.JTextField();
         txtRa = new javax.swing.JTextField();
-        txtRg = new javax.swing.JTextField();
         txtEmail = new javax.swing.JTextField();
         btnCadastrar = new javax.swing.JButton();
+        txtRg = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -61,6 +72,11 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
         jLabel4.setText("E-mail:");
 
         btnCadastrar.setText("Cadastrar");
+        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastrarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -72,7 +88,7 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
                         .addGap(24, 24, 24)
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
-                        .addComponent(txtRg, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtRg))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -89,11 +105,12 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addGap(18, 18, 18)
-                                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCadastrar)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -142,9 +159,70 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_btnFecharActionPerformed
 
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        txtNome.setBorder(null);
+        txtRa.setBorder(null);
+        txtRg.setBorder(null);
+        txtEmail.setBorder(null);
+        try{
+            if(txtNome.getText().trim().equals("")||txtNome.getText().trim().length()<4){
+                throw new NomeInvalidoException();
+            }
+            else{
+                if(txtRa.getText().trim().equals("")||txtRa.getText().length()<5){
+                    throw new RaInvalidoException();
+                }else{
+                    if(txtRg.getText().trim().equals("")||txtRg.getText().trim().length()!=9){
+                        throw new RgInvalidoException();
+                    }else{
+                        if(txtEmail.getText().trim().equals("")||txtEmail.getText().trim().length()<8|| !txtEmail.getText().matches("(.*)@(.*).com")){
+                            throw new EmailInvalidoException();
+                        }else{
+                            //if's para verificar se já nao existe rf/rg no bd
+                            String nome=txtNome.getText();
+                            nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
+                            String rg=txtRg.getText();
+                            String ra=txtRa.getText();
+                            String email=txtEmail.getText();
+                            //JOptionPane.showMessageDialog(null,""+nome+"\n"+ra+"\n"+rg+"\n"+email);
+                        }
+                    }
+                }
+            }
+        }
+        catch(NomeInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtNome.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtNome.requestFocus();
+        }
+        catch(RaInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtRa.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtRa.requestFocus();
+        }
+        catch(RgInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtRg.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtRg.requestFocus();
+        }
+        catch(EmailInvalidoException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            txtEmail.setBorder(BorderFactory.createLineBorder(Color.red));
+            txtEmail.requestFocus();
+        }
+    }//GEN-LAST:event_btnCadastrarActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    private void formatarCampo(){
+        try {
+            MaskFormatter mask= new MaskFormatter("#########");
+            mask.install(txtRg);
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
+        }
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -189,6 +267,6 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtNome;
     private javax.swing.JTextField txtRa;
-    private javax.swing.JTextField txtRg;
+    private javax.swing.JFormattedTextField txtRg;
     // End of variables declaration//GEN-END:variables
 }
