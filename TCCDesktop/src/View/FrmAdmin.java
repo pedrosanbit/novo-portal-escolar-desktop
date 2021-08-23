@@ -698,7 +698,7 @@ public class FrmAdmin extends javax.swing.JFrame {
         String cod=null;
         String nome=null;
         String prof=null;
-        try{
+        /*try{
             if(!cmbProfCurso.getItemAt(cmbProfCurso.getSelectedIndex()).trim().equals("")){
                 prof=cmbProfCurso.getItemAt(cmbProfCurso.getSelectedIndex());
             }
@@ -711,17 +711,17 @@ public class FrmAdmin extends javax.swing.JFrame {
         }
         catch(RuntimeException e){
             
-        }
-        /*txtNomeCurso.setText("");
-        txtCodCurso.setText("");
-        cmbProfCurso.setSelectedIndex(0);
+        }*/
+        //txtNomeCurso.setText("");
+        //txtCodCurso.setText("");
+        //cmbProfCurso.setSelectedIndex(0);
         //pesquisa + passar pra tabela
         DefaultTableModel dados= new DefaultTableModel();
         dados.setNumRows(0);
         dados.addColumn("Nome");
         dados.addColumn("Idade");
-        dados.addRow(new Object[]{"2", "1"});
-        this.tblCurso.setModel(dados);*/
+        dados.addRow(new Object[]{"0", "1"});
+        this.tblCurso.setModel(dados);
     }//GEN-LAST:event_btnConsultaCursoActionPerformed
 
     /**
