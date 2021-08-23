@@ -5,16 +5,14 @@
  */
 package View;
 
+import Control.ProfessorControle;
 import Model.NomeInvalidoException;
 import Model.RfInvalidoException;
 import Model.RgInvalidoException;
 import java.awt.Color;
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.SQLException;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
-import javax.swing.text.MaskFormatter;
 
 /**
  *
@@ -22,10 +20,10 @@ import javax.swing.text.MaskFormatter;
  */
 public class FrmCadastroProf extends javax.swing.JFrame {
 
-    
+    ProfessorControle pCtrl;
     public FrmCadastroProf() {
         initComponents();
-        formatarCampo();
+        pCtrl=new ProfessorControle();
     }
 
     /**
@@ -73,6 +71,12 @@ public class FrmCadastroProf extends javax.swing.JFrame {
             }
         });
 
+        try {
+            txtRg.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("#########")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -80,26 +84,31 @@ public class FrmCadastroProf extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btnCadastrar)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblTit)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(13, 13, 13)
-                                .addComponent(lblRg)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtRg))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnCadastrar))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(lblNome)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                        .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(14, 14, 14)
-                                .addComponent(lblRf)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtRf, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(lblRf))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(lblNome)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(btnFechar))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(13, 13, 13)
+                                .addComponent(lblRg)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtRg, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
+                            .addComponent(txtRf)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTit)
+                            .addComponent(btnFechar))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,7 +129,7 @@ public class FrmCadastroProf extends javax.swing.JFrame {
                     .addComponent(txtRg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCadastrar)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnFechar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -129,13 +138,13 @@ public class FrmCadastroProf extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -149,26 +158,24 @@ public class FrmCadastroProf extends javax.swing.JFrame {
         txtNome.setBorder(null);
         txtRf.setBorder(null);
         txtRg.setBorder(null);
+        int rf=0;
+        int rg=0;
+        if(!txtRf.getText().trim().equals("")){
+            rf= Integer.parseInt(this.txtRf.getText());
+        }
+        if(!txtRg.getText().trim().equals("")){
+            rg= Integer.parseInt(this.txtRg.getText());
+        }
+        String nome= this.txtNome.getText();
         try{
-            if(txtNome.getText().trim().equals("")||txtNome.getText().trim().length()<4){
-                throw new NomeInvalidoException();
-            }
-            else{
-                if(txtRf.getText().trim().equals("")){
-                    throw new RfInvalidoException();
-                }else{
-                    if(txtRg.getText().trim().equals("")||txtRg.getText().trim().length()!=9){
-                        throw new RgInvalidoException();
-                    }else{
-                        //if's para verificar se já nao existe rf/rg no bd
-                        String nome=txtNome.getText();
-                        nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
-                        String rg=txtRg.getText();
-                        String rf=txtRf.getText();
-                        //JOptionPane.showMessageDialog(null,""+nome+"\n"+rf+"\n"+rg);
-                    }
-                }
-            }
+            pCtrl.inserirAluno(rf, rg, nome);
+            JOptionPane.showMessageDialog(null, "Inserido com sucesso.");
+            txtRf.setText("");
+            txtRg.setText("");
+            txtNome.setText("");
+        }
+        catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Falha ao cadastrar\n"+ex.toString());
         }
         catch(NomeInvalidoException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -191,14 +198,6 @@ public class FrmCadastroProf extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     
-    private void formatarCampo(){
-        try {
-            MaskFormatter mask= new MaskFormatter("#########");
-            mask.install(txtRg);
-        } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
-        }
-    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

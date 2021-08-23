@@ -5,9 +5,11 @@
  */
 package View;
 
+import Control.CursoControle;
 import Model.CodInvalidoException;
 import Model.NomeInvalidoException;
 import java.awt.Color;
+import java.sql.SQLException;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -21,8 +23,10 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
     /**
      * Creates new form FrmCadastroCurso
      */
+    CursoControle cCtrl;
     public FrmCadastroCurso() {
         initComponents();
+        cCtrl= new CursoControle();
     }
 
     /**
@@ -37,11 +41,11 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         lblTitulo = new javax.swing.JLabel();
         lblCod = new javax.swing.JLabel();
-        txtCod = new javax.swing.JTextField();
         lblNome = new javax.swing.JLabel();
         txtNome = new javax.swing.JTextField();
         btnCadastrar = new javax.swing.JButton();
         btnFechar = new javax.swing.JButton();
+        txtCod = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -66,6 +70,12 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
             }
         });
 
+        try {
+            txtCod.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -83,9 +93,9 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
                                     .addComponent(btnFechar)
                                     .addComponent(lblNome)))
                             .addGap(18, 18, 18)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(txtNome, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                                .addComponent(txtCod)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -130,7 +140,7 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
         txtNome.setBorder(null);
         txtCod.setBorder(null);
         try{
-            if(txtCod.getText().trim().equals("")||txtCod.getText().length()<3){
+            if(Integer.parseInt(txtCod.getText())<=0){
                 throw new CodInvalidoException();
             }
             else{
@@ -139,10 +149,16 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
                 }else{
                     String nome=txtNome.getText();
                     nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
-                    String cod=txtCod.getText();
-                    JOptionPane.showMessageDialog(null,""+cod+"\n"+nome);
+                    int cod=Integer.parseInt(txtCod.getText());
+                    cCtrl.inserirCurso(cod, nome);
+                    JOptionPane.showMessageDialog(null, "Inserido com sucesso.");
+                    txtNome.setText("");
+                    txtCod.setText("");
                 }
             }
+        }
+        catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Falha ao cadastrar");
         }
         catch(CodInvalidoException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -198,7 +214,7 @@ public class FrmCadastroCurso extends javax.swing.JFrame {
     private javax.swing.JLabel lblCod;
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblTitulo;
-    private javax.swing.JTextField txtCod;
+    private javax.swing.JFormattedTextField txtCod;
     private javax.swing.JTextField txtNome;
     // End of variables declaration//GEN-END:variables
 }

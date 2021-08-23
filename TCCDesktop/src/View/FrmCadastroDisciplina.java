@@ -5,10 +5,12 @@
  */
 package View;
 
+import Control.DisciplinaControle;
 import Model.CargaHInvalidaException;
 import Model.CodInvalidoException;
 import Model.NomeInvalidoException;
 import java.awt.Color;
+import java.sql.SQLException;
 import java.text.ParseException;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
@@ -23,9 +25,10 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
     /**
      * Creates new form FrmCadastroDisciplina
      */
+    DisciplinaControle dCtrl;
     public FrmCadastroDisciplina() {
         initComponents();
-        formatarCampo();
+        dCtrl= new DisciplinaControle();
     }
 
     /**
@@ -73,7 +76,11 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
             }
         });
 
-        txtCargaH.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("##"))));
+        try {
+            txtCargaH.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -158,15 +165,21 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
                     if(txtCargaH.getText().trim().equals("")||Integer.parseInt(txtCargaH.getText())<=0){
                         throw new CargaHInvalidaException();
                     }else{                            
-                        //if's para verificar se já nao existe rf/rg no bd
                         String nome=txtNome.getText();
                         nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
                         String cod=txtCod.getText();
                         int carga=Integer.parseInt(txtCargaH.getText());
-                        JOptionPane.showMessageDialog(null,""+cod+"\n"+nome+"\n"+carga);
+                            dCtrl.inserirDisciplina(cod, nome, carga);
+                            JOptionPane.showMessageDialog(null, "Inserido com sucesso.");
+                            txtCod.setText("");
+                            txtCargaH.setText("");
+                            txtNome.setText("");                        
                     }
                 }
              }
+        }
+        catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Falha ao cadastrar");
         }
         catch(CodInvalidoException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -188,14 +201,6 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    private void formatarCampo(){
-        try {
-            MaskFormatter mask= new MaskFormatter("##");
-            mask.install(txtCargaH);
-        } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
-        }
-    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

@@ -5,12 +5,15 @@
  */
 package View;
 
+import Control.TurmaControle;
 import Model.CodInvalidoException;
 import Model.CursoInvalidoException;
 import Model.NomeInvalidoException;
 import Model.PeriodoInvalidoException;
 import java.awt.Color;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Calendar;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.text.MaskFormatter;
@@ -24,9 +27,11 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
     /**
      * Creates new form FrmCadastroTurma
      */
+    TurmaControle tCtrl;
     public FrmCadastroTurma() {
         initComponents();
-        formatarCampo();
+        txtPeriodo.setText(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
+        tCtrl= new TurmaControle();
     }
 
     /**
@@ -80,7 +85,11 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
             }
         });
 
-        txtPeriodo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        try {
+            txtPeriodo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -179,14 +188,21 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
                             String nome=txtNome.getText();
                             nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
                             String cod=txtCod.getText();
-                            String curso= cmbCurso.getSelectedItem().toString();
+                            int curso= cmbCurso.getSelectedIndex();
                             int periodo= Integer.parseInt(txtPeriodo.getText());
-                            JOptionPane.showMessageDialog(null,""+cod+"\n"+nome+"\n"+curso+"\n"+periodo);
+                            tCtrl.inserirTurma(cod, periodo, curso, nome);
+                            JOptionPane.showMessageDialog(null, "Inserido com sucesso.");
+                            txtPeriodo.setText("");
+                            txtCod.setText("");
+                            txtNome.setText("");
+                            cmbCurso.setSelectedIndex(0);
                         }
                     }
-                    
                 }
             }
+        }
+        catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Falha ao cadastrar");
         }
         catch(CodInvalidoException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -213,14 +229,6 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    private void formatarCampo(){
-        try {
-            MaskFormatter mask= new MaskFormatter("####");
-            mask.install(txtPeriodo);
-        } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
-        }
-    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

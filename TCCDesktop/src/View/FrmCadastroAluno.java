@@ -5,6 +5,8 @@
  */
 package View;
 
+import Control.AlunoControle;
+import java.sql.SQLException;
 import Model.EmailInvalidoException;
 import Model.NomeInvalidoException;
 import Model.RaInvalidoException;
@@ -24,9 +26,10 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
     /**
      * Creates new form FrmCadastroAluno
      */
+    AlunoControle alCtrl;
     public FrmCadastroAluno() {
         initComponents();
-        formatarCampo();
+        alCtrl= new AlunoControle();
     }
 
     /**
@@ -77,6 +80,12 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
                 btnCadastrarActionPerformed(evt);
             }
         });
+
+        try {
+            txtRg.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("#########")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -147,9 +156,7 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 11, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -164,31 +171,26 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
         txtRa.setBorder(null);
         txtRg.setBorder(null);
         txtEmail.setBorder(null);
+        int ra=0;
+        int rg=0;
+        if(!txtRa.getText().trim().equals("")){
+            ra= Integer.parseInt(this.txtRa.getText());
+        }
+        if(!txtRg.getText().trim().equals("")){
+            rg= Integer.parseInt(this.txtRg.getText());
+        }
+        String nome= this.txtNome.getText();
+        String email= this.txtEmail.getText();
         try{
-            if(txtNome.getText().trim().equals("")||txtNome.getText().trim().length()<4){
-                throw new NomeInvalidoException();
-            }
-            else{
-                if(txtRa.getText().trim().equals("")||txtRa.getText().length()<5){
-                    throw new RaInvalidoException();
-                }else{
-                    if(txtRg.getText().trim().equals("")||txtRg.getText().trim().length()!=9){
-                        throw new RgInvalidoException();
-                    }else{
-                        if(txtEmail.getText().trim().equals("")||txtEmail.getText().trim().length()<8|| !txtEmail.getText().matches("(.*)@(.*).com")){
-                            throw new EmailInvalidoException();
-                        }else{
-                            //if's para verificar se já nao existe rf/rg no bd
-                            String nome=txtNome.getText();
-                            nome= nome.substring(0,1).toUpperCase()+nome.substring(1);
-                            String rg=txtRg.getText();
-                            String ra=txtRa.getText();
-                            String email=txtEmail.getText();
-                            //JOptionPane.showMessageDialog(null,""+nome+"\n"+ra+"\n"+rg+"\n"+email);
-                        }
-                    }
-                }
-            }
+            alCtrl.inserirAluno(ra, rg, nome, email);
+            JOptionPane.showMessageDialog(null, "Inserido com sucesso.");
+            txtRa.setText("");
+            txtRg.setText("");
+            txtNome.setText("");
+            txtEmail.setText("");
+        }
+        catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Falha ao cadastrar");
         }
         catch(NomeInvalidoException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -215,14 +217,6 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    private void formatarCampo(){
-        try {
-            MaskFormatter mask= new MaskFormatter("#########");
-            mask.install(txtRg);
-        } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(null, "Erro ao formatar campo de texto");
-        }
-    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
