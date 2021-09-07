@@ -9,13 +9,53 @@ import Conexao.Conexao;
 import Model.Aluno;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 /**
  *
  * @author ottoj
  */
 public class AlunoDAO {
     private Connection con= null;
+    
+    public ArrayList<Aluno> buscarAluno(String sql, String ra, String nome, String turma) throws SQLException, ClassNotFoundException  {
+        ResultSet rs = null;
+        int op=1;
+        ArrayList<Aluno> lista = new ArrayList();
+        try{
+            con = new Conexao().getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            
+            if(!turma.trim().equals("")){
+                stmt.setString(op, turma);
+                op++;
+            }
+            if(!ra.trim().equals("")){
+                stmt.setString(op, ra);
+                op++;
+            }
+            if(!nome.trim().equals("")){
+                nome=nome.substring(0,1).toUpperCase()+nome.substring(1).toLowerCase();
+                stmt.setString(op, "%"+nome+"%");
+            }
+            rs = stmt.executeQuery();
+            while (rs.next()){
+                int raL = rs.getInt("raAluno");
+                int rgL = rs.getInt("rgAluno");
+                String nomeL = rs.getString("nomeAluno");           
+                Aluno al = new Aluno(raL, rgL, nomeL, "");
+                lista.add(al);
+            }
+            stmt.close();
+        }catch(SQLException ex){
+            System.out.println(ex.toString());
+        }
+        finally{
+            con.close();
+        }
+        return lista;
+    }
     
     public void cadastrar(Aluno al){
         try{

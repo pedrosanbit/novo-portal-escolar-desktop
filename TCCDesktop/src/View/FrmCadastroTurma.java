@@ -28,10 +28,17 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
      * Creates new form FrmCadastroTurma
      */
     TurmaControle tCtrl;
+    private static FrmCadastroTurma novoForm= null;
     public FrmCadastroTurma() {
         initComponents();
         txtPeriodo.setText(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
         tCtrl= new TurmaControle();
+    }
+    
+    public static FrmCadastroTurma chamarConsulta(){
+        if(novoForm==null)
+            novoForm= new FrmCadastroTurma();
+        return novoForm;
     }
 
     /**
@@ -56,7 +63,7 @@ public class FrmCadastroTurma extends javax.swing.JFrame {
         btnCadastrar = new javax.swing.JButton();
         txtPeriodo = new javax.swing.JFormattedTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnFechar.setText("Fechar");
         btnFechar.addActionListener(new java.awt.event.ActionListener() {
