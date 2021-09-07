@@ -20,12 +20,17 @@ import javax.swing.JOptionPane;
  */
 public class FrmCadastroProf extends javax.swing.JFrame {
 
+    private static FrmCadastroProf novoForm= null;
     ProfessorControle pCtrl;
     public FrmCadastroProf() {
         initComponents();
         pCtrl=new ProfessorControle();
     }
-
+    public static FrmCadastroProf chamarConsulta(){
+        if(novoForm==null)
+            novoForm= new FrmCadastroProf();
+        return novoForm;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -46,7 +51,7 @@ public class FrmCadastroProf extends javax.swing.JFrame {
         btnCadastrar = new javax.swing.JButton();
         txtRg = new javax.swing.JFormattedTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnFechar.setText("Fechar");
         btnFechar.addActionListener(new java.awt.event.ActionListener() {

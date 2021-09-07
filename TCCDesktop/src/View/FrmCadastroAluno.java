@@ -26,10 +26,16 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
     /**
      * Creates new form FrmCadastroAluno
      */
+    private static FrmCadastroAluno novoForm= null;
     AlunoControle alCtrl;
     public FrmCadastroAluno() {
         initComponents();
         alCtrl= new AlunoControle();
+    }
+    public static FrmCadastroAluno chamarConsulta(){
+        if(novoForm==null)
+            novoForm= new FrmCadastroAluno();
+        return novoForm;
     }
 
     /**
@@ -54,7 +60,7 @@ public class FrmCadastroAluno extends javax.swing.JFrame {
         btnCadastrar = new javax.swing.JButton();
         txtRg = new javax.swing.JFormattedTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         lblTit.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblTit.setText("Cadastro de Aluno");

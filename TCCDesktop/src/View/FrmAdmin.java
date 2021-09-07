@@ -4,7 +4,19 @@
  * and open the template in the editor.
  */
 package View;
-
+import java.sql.PreparedStatement;
+import Conexao.Conexao;
+import Control.AlunoControle;
+import Model.Aluno;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,10 +30,20 @@ import javax.swing.table.DefaultTableModel;
 public class FrmAdmin extends javax.swing.JFrame {
     
     JFrame j;
+    AlunoControle alCtrl;
+    private Connection con= null;
     public FrmAdmin() {
         initComponents();
        this. tblCurso.setVisible(false);
+       alCtrl=new AlunoControle();
+       fillCombo(cmbTurmaAluno, "select distinct * from TurmasTCC");
+       
+       /*DefaultComboBoxModel defaultComboBox = new DefaultComboBoxModel(a.toArray());
+       cmbTurmaAluno.setModel(defaultComboBox);*/
+       
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -90,14 +112,15 @@ public class FrmAdmin extends javax.swing.JFrame {
         lblNomeA = new javax.swing.JLabel();
         lblTuraA = new javax.swing.JLabel();
         lblOrdemA = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        cmbTurmaAluno = new javax.swing.JComboBox<>();
+        cmbOrdemAluno = new javax.swing.JComboBox<>();
         txtNomeAluno = new javax.swing.JTextField();
         txtRaAluno = new javax.swing.JTextField();
         btnConsultaAluno = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         tblAluno = new javax.swing.JTable();
         btnCadastroAluno = new javax.swing.JButton();
+        btnAlterar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -518,20 +541,36 @@ public class FrmAdmin extends javax.swing.JFrame {
 
         lblOrdemA.setText("Ordem:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Teste1", "Teste2" }));
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alfabética A-Z", "Alfabética Z-A", "RA Crescente", "RA Decrescente" }));
+        cmbOrdemAluno.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alfabética A-Z", "Alfabética Z-A", "RA Crescente", "RA Decrescente" }));
 
         btnConsultaAluno.setText("Consultar");
+        btnConsultaAluno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultaAlunoActionPerformed(evt);
+            }
+        });
 
         tblAluno.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-
+                "RA", "Nome", "RG"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblAluno.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblAlunoMouseClicked(evt);
+            }
+        });
         jScrollPane5.setViewportView(tblAluno);
 
         btnCadastroAluno.setText("Cadastrar");
@@ -541,20 +580,22 @@ public class FrmAdmin extends javax.swing.JFrame {
             }
         });
 
+        btnAlterar.setText("Alterar");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                    .addGroup(jPanel7Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblRaA)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txtRaAluno, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24))
+                        .addGap(13, 13, 13))
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel7Layout.createSequentialGroup()
                                 .addGap(56, 56, 56)
                                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -566,14 +607,17 @@ public class FrmAdmin extends javax.swing.JFrame {
                                             .addComponent(lblNomeA))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cmbOrdemAluno, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cmbTurmaAluno, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(txtNomeAluno, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                             .addGroup(jPanel7Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(btnCadastroAluno)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)))
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnCadastroAluno)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnAlterar)
+                                .addGap(6, 6, 6)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
@@ -592,11 +636,11 @@ public class FrmAdmin extends javax.swing.JFrame {
                             .addComponent(txtNomeAluno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbTurmaAluno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblTuraA))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbOrdemAluno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblOrdemA))
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel7Layout.createSequentialGroup()
@@ -604,7 +648,9 @@ public class FrmAdmin extends javax.swing.JFrame {
                                 .addComponent(btnConsultaAluno))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnCadastroAluno)))))
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnCadastroAluno)
+                                    .addComponent(btnAlterar))))))
                 .addContainerGap(13, Short.MAX_VALUE))
         );
 
@@ -631,15 +677,35 @@ public class FrmAdmin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void fillCombo(JComboBox cmb, String sql){
+        try{
+            ResultSet rs = null;
+            con= new Conexao().getConnection();
+            PreparedStatement stmt= con.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            cmb.addItem("");
+            while (rs.next()){
+                cmb.addItem(rs.getString("codTurma"));
+            }
+        }
+        catch(SQLException ex){
+            System.out.println(ex.toString());
+        }
+        catch(ClassNotFoundException ex){
+            System.out.println(ex.toString());
+        }
+        finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                System.out.println(ex.toString());
+            }
+        }
+    }
+    
     private void btnCadastrarCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarCursoActionPerformed
-        if(j==null){
-            j= new FrmCadastroCurso();
-            j.setVisible(true);
-        }
-        else{
-            j.setVisible(true);
-        }
-        j=null;
+        FrmCadastroCurso novo=FrmCadastroCurso.chamarConsulta();
+        novo.setVisible(true);
     }//GEN-LAST:event_btnCadastrarCursoActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
@@ -651,47 +717,23 @@ public class FrmAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnCadastrarDiscActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarDiscActionPerformed
-        if(j==null){
-            j= new FrmCadastroDisciplina();
-            j.setVisible(true);
-        }
-        else{
-            j.setVisible(true);
-        }
-        j=null;
+        FrmCadastroDisciplina novo=FrmCadastroDisciplina.chamarConsulta();
+        novo.setVisible(true);
     }//GEN-LAST:event_btnCadastrarDiscActionPerformed
 
     private void btnCadastroTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroTurmaActionPerformed
-        if(j==null){
-            j= new FrmCadastroTurma();
-            j.setVisible(true);
-        }
-        else{
-            j.setVisible(true);
-        }
-        j=null;
+        FrmCadastroTurma novo=FrmCadastroTurma.chamarConsulta();
+        novo.setVisible(true);
     }//GEN-LAST:event_btnCadastroTurmaActionPerformed
 
     private void btnCadastroProfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroProfActionPerformed
-        if(j==null){
-            j= new FrmCadastroProf();
-            j.setVisible(true);
-        }
-        else{
-            j.setVisible(true);
-        }
-        j=null;
+        FrmCadastroProf novo=FrmCadastroProf.chamarConsulta();
+        novo.setVisible(true);
     }//GEN-LAST:event_btnCadastroProfActionPerformed
 
     private void btnCadastroAlunoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroAlunoActionPerformed
-       if(j==null){
-            j= new FrmCadastroAluno();
-            j.setVisible(true);
-        }
-        else{
-            j.setVisible(true);
-        }
-        j=null;
+       FrmCadastroAluno novo=FrmCadastroAluno.chamarConsulta();
+       novo.setVisible(true);
     }//GEN-LAST:event_btnCadastroAlunoActionPerformed
 
     private void btnConsultaCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaCursoActionPerformed
@@ -723,6 +765,51 @@ public class FrmAdmin extends javax.swing.JFrame {
         dados.addRow(new Object[]{"0", "1"});
         this.tblCurso.setModel(dados);
     }//GEN-LAST:event_btnConsultaCursoActionPerformed
+
+    private void btnConsultaAlunoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaAlunoActionPerformed
+        
+        String nome="";
+        String ra="";
+        String turma=""; 
+        String ordem="";
+        
+        if(cmbTurmaAluno.getSelectedIndex()>0){
+            turma=cmbTurmaAluno.getItemAt(cmbTurmaAluno.getSelectedIndex());
+        }
+        if(!txtRaAluno.getText().trim().equals("")){
+            ra=txtRaAluno.getText().trim();
+        }
+        if(!txtNomeAluno.getText().trim().equals("")){
+            nome=txtNomeAluno.getText();
+        }
+        switch(cmbOrdemAluno.getSelectedIndex()){
+            case 0:
+                ordem=" order by a.nomeAluno desc";
+                break;
+            case 1:
+                ordem=" order by a.nomeAluno asc";
+                break;
+            case 2:
+                ordem=" order by a.raAluno desc";
+                break;
+            case 3:
+                ordem= "order by a.raAluno asc";
+                break;
+        }
+        
+        ArrayList<Aluno> lista= alCtrl.consultarAluno(ra, nome, turma, ordem);
+        
+        DefaultTableModel dados = (DefaultTableModel) tblAluno.getModel();
+        dados.setNumRows(0);
+        for (Aluno al: lista)
+        {
+            dados.addRow(new Object[]{al.getRa(), al.getNome(), al.getRg()});
+        }
+    }//GEN-LAST:event_btnConsultaAlunoActionPerformed
+
+    private void tblAlunoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAlunoMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblAlunoMouseClicked
 
     /**
      * @param args the command line arguments
@@ -760,6 +847,7 @@ public class FrmAdmin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAlterar;
     private javax.swing.JButton btnCadastrarCurso;
     private javax.swing.JButton btnCadastrarDisc;
     private javax.swing.JButton btnCadastroAluno;
@@ -773,13 +861,13 @@ public class FrmAdmin extends javax.swing.JFrame {
     private javax.swing.JButton btnLogout;
     private javax.swing.JComboBox<String> cmbCursoTurma;
     private javax.swing.JComboBox<String> cmbDiscProf;
+    private javax.swing.JComboBox<String> cmbOrdemAluno;
     private javax.swing.JComboBox<String> cmbPeriodoTurma;
     private javax.swing.JComboBox<String> cmbProfCurso;
     private javax.swing.JComboBox<String> cmbProfDisc;
+    private javax.swing.JComboBox<String> cmbTurmaAluno;
     private javax.swing.JComboBox<String> cmbTurmaDisc;
     private javax.swing.JComboBox<String> cmbTurmaProf;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

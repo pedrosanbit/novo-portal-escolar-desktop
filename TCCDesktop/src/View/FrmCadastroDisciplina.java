@@ -25,10 +25,16 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
     /**
      * Creates new form FrmCadastroDisciplina
      */
+    private static FrmCadastroDisciplina novoForm= null;
     DisciplinaControle dCtrl;
     public FrmCadastroDisciplina() {
         initComponents();
         dCtrl= new DisciplinaControle();
+    }
+    public static FrmCadastroDisciplina chamarConsulta(){
+        if(novoForm==null)
+            novoForm= new FrmCadastroDisciplina();
+        return novoForm;
     }
 
     /**
@@ -51,7 +57,7 @@ public class FrmCadastroDisciplina extends javax.swing.JFrame {
         btnCadastrar = new javax.swing.JButton();
         txtCargaH = new javax.swing.JFormattedTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnFechar.setText("Fechar");
         btnFechar.addActionListener(new java.awt.event.ActionListener() {
